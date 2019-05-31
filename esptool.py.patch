@@ -1,0 +1,53 @@
+--- esptool.org.py	2019-05-31 11:34:56.052313300 +0000
++++ esptool.py	2019-05-31 11:19:22.390000200 +0000
+@@ -60,6 +60,8 @@
+           "Check the README for installation instructions." % (sys.VERSION, sys.executable))
+     raise
+ 
++import rfc2217esp
++
+ __version__ = "2.6"
+ 
+ MAX_UINT32 = 0xffffffff
+@@ -415,23 +417,24 @@
+         # DTR & RTS are active low signals,
+         # ie True = pin @ 0V, False = pin @ VCC.
+         if mode != 'no_reset':
+-            self._setDTR(False)  # IO0=HIGH
+-            self._setRTS(True)   # EN=LOW, chip in reset
+-            time.sleep(0.1)
+-            if esp32r0_delay:
+-                # Some chips are more likely to trigger the esp32r0
+-                # watchdog reset silicon bug if they're held with EN=LOW
+-                # for a longer period
+-                time.sleep(1.2)
+-            self._setDTR(True)   # IO0=LOW
+-            self._setRTS(False)  # EN=HIGH, chip out of reset
+-            if esp32r0_delay:
+-                # Sleep longer after reset.
+-                # This workaround only works on revision 0 ESP32 chips,
+-                # it exploits a silicon bug spurious watchdog reset.
+-                time.sleep(0.4)  # allow watchdog reset to occur
+-            time.sleep(0.05)
+-            self._setDTR(False)  # IO0=HIGH, done
++            self._port.flash_esp()
++#            self._setDTR(False)  # IO0=HIGH
++#            self._setRTS(True)   # EN=LOW, chip in reset
++#            time.sleep(0.1)
++#            if esp32r0_delay:
++#                # Some chips are more likely to trigger the esp32r0
++#                # watchdog reset silicon bug if they're held with EN=LOW
++#                # for a longer period
++#                time.sleep(1.2)
++#            self._setDTR(True)   # IO0=LOW
++#            self._setRTS(False)  # EN=HIGH, chip out of reset
++#            if esp32r0_delay:
++#                # Sleep longer after reset.
++#                # This workaround only works on revision 0 ESP32 chips,
++#                # it exploits a silicon bug spurious watchdog reset.
++#                time.sleep(0.4)  # allow watchdog reset to occur
++#            time.sleep(0.05)
++#            self._setDTR(False)  # IO0=HIGH, done
+ 
+         for _ in range(5):
+             try:
